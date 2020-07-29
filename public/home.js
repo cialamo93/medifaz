@@ -13,7 +13,7 @@ document.getElementById("addPacient").addEventListener("click", (event) => {
     let paciente = document.getElementById("paciente-addPacient").value; let rut = document.getElementById("rut-addPacient").value; let comentario = document.getElementById("comentario-addPacient").value; let telefono = document.getElementById("telefono-addPacient").value; let mail = document.getElementById("mail-addPacient").value; let telefonoSecundario = document.getElementById("telefonoSecundario-addPacient").value; let direccion = document.getElementById("direccion-addPacient").value;
     let x = { paciente, rut, comentario, telefono, mail, telefonoSecundario, direccion };
    newPatient();
-   async function newPatient() { const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) }; let response = await fetch('http://localhost:5000/newPatient', options); let data = await response.json(); if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Usuario Agregado!' }); pacientTable.setData('http://localhost:5000/getPatients');} };
+   async function newPatient() { const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) }; let response = await fetch('/newPatient', options); let data = await response.json(); if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Usuario Agregado!' }); pacientTable.setData('/getPatients');} };
 });
 
 document.getElementById("addDrug").addEventListener("click", (event) => {
@@ -27,10 +27,10 @@ document.getElementById("addDrug").addEventListener("click", (event) => {
    newDrug(); 
    async function newDrug() {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
-   let response = await fetch('http://localhost:5000/newDrug', options);
+   let response = await fetch('/newDrug', options);
    let data = await response.json();
    console.log(data)
-   if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Medicamento Agregado!' }); drugTable.setData('http://localhost:5000/getDrugs')}
+   if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Medicamento Agregado!' }); drugTable.setData('/getDrugs')}
    };
 
 });
@@ -42,7 +42,7 @@ let pacientTable = new Tabulator("#pacientTable", {
     selectable: 1,
     tooltips: true,
     tooltipsHeader: true,
-    ajaxURL: 'http://localhost:5000/getPatients',
+    ajaxURL: '/getPatients',
     index: "sku",
     reactiveData: true,
     layout: "fitColumns",
@@ -84,7 +84,7 @@ let drugTable = new Tabulator("#drugTable", {
     index: "sku",
     reactiveData: true,
     layout: "fitColumns",
-    placeholder: "No se encontraron pacientes",
+    placeholder: "No se encontraron medicamentos",
     layoutColumnsOnNewData: true,
     columns: [
      { title: "Medicamento", field: "medicamento", hozAlign: "center", sorter: "string", editor: "input", editable: false, },
@@ -180,7 +180,7 @@ document.getElementById("addPrescription").addEventListener("click", (event) => 
             },
             body: JSON.stringify(x)
         };
-        let response = await fetch('http://localhost:5000/newPrescription', options);
+        let response = await fetch('/newPrescription', options);
         let data = await response.json();
         if (data == "Done") {
             agregadoExitoso.fire({

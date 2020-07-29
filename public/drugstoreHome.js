@@ -12,7 +12,7 @@ document.getElementById("searchPatientId").addEventListener("click", (event) => 
    searchPrescription(); 
    async function searchPrescription() {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
-   let response = await fetch('http://localhost:5000/searchPrescription', options);
+   let response = await fetch('/searchPrescription', options);
    let data = await response.json();
    if (data.length != 0) {
        agregadoExitoso.fire({ icon: 'success', title: 'Receta Encontrada!' });
