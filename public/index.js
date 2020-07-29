@@ -72,6 +72,11 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
    };
 });
 
+drugs()
+async function drugs() {
+  fetch('/pene');
+}
+
 
 $('.modal').on('hidden.bs.modal', function () { $(this).find('form').trigger('reset'); });
 

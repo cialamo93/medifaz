@@ -59,7 +59,7 @@ let pacientTable = new Tabulator("#pacientTable", {
 
 
 
-//drugs()
+drugs()
 async function drugs() {
     // let xy = { pene: 2 }
     // const options = {

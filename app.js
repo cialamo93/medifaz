@@ -183,15 +183,15 @@ app.get('/getDrugs', (request, response) => {
 
 app.get('/pene', (request, response) => { 
     console.log("algo llega wn")
-    let drugs = [];
-    async function queryDrugs() { let query = await usuarios.aggregate([{ "$match": { "rut": userX.rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, pacientes: 0 } }, ]); drugs.push(query); return "Done"; };
-    queryAll();
-    async function queryAll() {
-        let drugsQuery = await queryDrugs();
-        if (drugsQuery) {
-            response.json(drugs[0][0].medicamentos);
-        };
-    };
+    // let drugs = [];
+    // async function queryDrugs() { let query = await usuarios.aggregate([{ "$match": { "rut": userX.rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, pacientes: 0 } }, ]); drugs.push(query); return "Done"; };
+    // queryAll();
+    // async function queryAll() {
+    //     let drugsQuery = await queryDrugs();
+    //     if (drugsQuery) {
+    //         response.json(drugs[0][0].medicamentos);
+    //     };
+    // };
 }); 
 app.post('/pene', (request, response) => { 
     console.log("algo llega wn")
