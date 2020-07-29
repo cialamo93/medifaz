@@ -25,7 +25,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json({limit: '10mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
-var port = process.env.port || 5000;
+var port = process.env.PORT || 5000;
 
 app.listen(port, () => { console.log("Dandole en el 5000, todo bien por acá") });  
 
