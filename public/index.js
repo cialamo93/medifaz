@@ -72,6 +72,8 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
    };
 });
 
+console.log("Actualizacion")
+
 drugs()
 async function drugs() {
   fetch('/pene');
