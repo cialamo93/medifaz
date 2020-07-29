@@ -28,7 +28,7 @@ document.getElementById("loginDoctor").addEventListener("click", (event) => {
    verifyPassword();
    async function verifyPassword() {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
-   let response = await fetch('http://localhost:5000/loginDoctores', options);
+   let response = await fetch('/loginDoctores', options);
    let data = await response.json();
    console.log(data)
    if (data == "Permitir") { console.log("Acceso Permitido"); location.href = 'home.html' }
@@ -72,12 +72,12 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
    };
 });
 
-console.log("Actualizacion Dos")
+console.log("Actualizacion Tres")
 
-drugs()
-async function drugs() {
-  fetch('/pene');
-}
+// drugs()
+// async function drugs() {
+//   fetch('/pene');
+// }
 
 
 $('.modal').on('hidden.bs.modal', function () { $(this).find('form').trigger('reset'); });
