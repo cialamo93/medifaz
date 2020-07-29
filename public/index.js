@@ -49,7 +49,7 @@ document.getElementById("registerDrugstore").addEventListener("click", (event) =
    newDrugstore();
    async function newDrugstore() {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
-   let response = await fetch('http://localhost:5000/registroFarmacia', options);
+   let response = await fetch('/registroFarmacia', options);
    let data = await response.json();
    if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Farmacia Registrada' });}
    };
@@ -63,7 +63,7 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
    verifyPassword();
    async function verifyPassword() {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
-   let response = await fetch('http://localhost:5000/loginDrugstore', options);
+   let response = await fetch('/loginDrugstore', options);
    let data = await response.json();
    if (data == "Permitir") { console.log("Acceso Permitido"); location.href = 'drugstoreHome.html' }
    else if (data == "Contraseña Equivocada") {agregadoExitoso.fire({ icon: 'error', title: 'Contraseña Equivocada' });}
@@ -72,7 +72,7 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
    };
 });
 
-console.log("Actualizacion")
+console.log("Actualizacion Dos")
 
 drugs()
 async function drugs() {
