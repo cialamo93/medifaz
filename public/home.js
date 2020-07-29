@@ -80,7 +80,7 @@ let drugTable = new Tabulator("#drugTable", {
     selectable: 1,
     tooltips: true,
     tooltipsHeader: true,
-    ajaxURL: 'http://localhost:5000/getDrugs',
+    ajaxURL: '/getDrugs',
     index: "sku",
     reactiveData: true,
     layout: "fitColumns",
