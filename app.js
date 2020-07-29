@@ -25,9 +25,9 @@ app.use(express.static('public'));
 app.use(bodyParser.json({limit: '10mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
-var port = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
-app.listen(port, () => { console.log("Dandole en el 5000, todo bien por acá") });  
+app.listen(port, () => { console.log(`Sistema establecido desde el puerto ${port}. All systems looking good.`) });  
 
 app.use(morgan('dev'));  
 
