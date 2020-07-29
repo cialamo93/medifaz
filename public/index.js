@@ -14,7 +14,7 @@ document.getElementById("register").addEventListener("click", (event) => {
    newUser();
    async function newUser() {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
-   let response = await fetch('http://localhost:5000/registro', options);
+   let response = await fetch('/registro', options);
    let data = await response.json();
    };
 });
@@ -72,7 +72,7 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
    };
 });
 
-console.log("Actualizacion Tres")
+console.log("Actualizacion Cuatro")
 
 // drugs()
 // async function drugs() {
