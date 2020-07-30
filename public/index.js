@@ -30,12 +30,21 @@ document.getElementById("loginDoctor").addEventListener("click", (event) => {
    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
    let response = await fetch('/loginDoctores', options);
    let data = await response.json();
-   console.log(data)
-   if (data == "Permitir") { console.log("Acceso Permitido"); location.href = 'home.html' }
-   else if (data == "Contraseña Equivocada") {agregadoExitoso.fire({ icon: 'error', title: 'Contraseña Equivocada' });}
+   if (data.acceso == "Permitir") { 
+      console.log("Acceso Permitido"); localStorage.setItem("token", data.token);
+      location.href = 'home.html'; 
+   }
+   else if (data.acceso == "Contraseña Equivocada") {agregadoExitoso.fire({ icon: 'error', title: 'Contraseña Equivocada' });}
    else {agregadoExitoso.fire({ icon: 'error', title: 'Usuario no encontrado' });}
 
    };
+});
+
+
+document.getElementById("regDrug").addEventListener("click", (event) => {
+   var cat = localStorage.getItem('token');
+   console.log(cat);
+
 });
 
 
@@ -73,11 +82,6 @@ document.getElementById("loginDrugstore").addEventListener("click", (event) => {
 });
 
 console.log("Actualizacion Cuatro")
-
-// drugs()
-// async function drugs() {
-//   fetch('/pene');
-// }
 
 
 $('.modal').on('hidden.bs.modal', function () { $(this).find('form').trigger('reset'); });

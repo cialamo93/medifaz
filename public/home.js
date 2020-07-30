@@ -8,12 +8,23 @@ let selectedPatient;
 
 function makeid(length) { let result = ''; let characters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'; let charactersLength = characters.length; for (let i = 0; i < length; i++) { result += characters.charAt(Math.floor(Math.random() * charactersLength)); }; return result; };
 let idsYaAgregados = [];
+let fecha = moment();
+
+let token = localStorage.getItem('token');
+
+
 
 document.getElementById("addPacient").addEventListener("click", (event) => {
     let paciente = document.getElementById("paciente-addPacient").value; let rut = document.getElementById("rut-addPacient").value; let comentario = document.getElementById("comentario-addPacient").value; let telefono = document.getElementById("telefono-addPacient").value; let mail = document.getElementById("mail-addPacient").value; let telefonoSecundario = document.getElementById("telefonoSecundario-addPacient").value; let direccion = document.getElementById("direccion-addPacient").value;
-    let x = { paciente, rut, comentario, telefono, mail, telefonoSecundario, direccion };
+    let data = { paciente, rut, comentario, telefono, mail, telefonoSecundario, direccion };
+    let dataAndToken = {token: token, data: data};
    newPatient();
-   async function newPatient() { const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) }; let response = await fetch('/newPatient', options); let data = await response.json(); if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Usuario Agregado!' }); pacientTable.setData('/getPatients');} };
+   async function newPatient() {
+       const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataAndToken) };
+       let response = await fetch('/newPatient', options);
+       let data = await response.json();
+       if (data == "Done") { agregadoExitoso.fire({ icon: 'success', title: 'Usuario Agregado!' }); pacientTable.setData('/getPatients', {token: token}); };
+   };
 });
 
 document.getElementById("addDrug").addEventListener("click", (event) => {
@@ -22,15 +33,15 @@ document.getElementById("addDrug").addEventListener("click", (event) => {
     let formato = document.getElementById("formato-addDrug").value;
     let dosis = document.getElementById("dosis-addDrug").value;
     let drugID = makeid(6);
-    let x = { medicamento, fabricante, formato, dosis, drugID };
+    let data = { medicamento, fabricante, formato, dosis, drugID };
+    let dataAndToken = {token: token, data: data};
     
    newDrug(); 
    async function newDrug() {
-   const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(x) };
+   const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataAndToken) };
    let response = await fetch('/newDrug', options);
    let data = await response.json();
-   console.log(data)
-   if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Medicamento Agregado!' }); drugTable.setData('/getDrugs')}
+   if (data == "Done") {agregadoExitoso.fire({ icon: 'success', title: 'Medicamento Agregado!' }); drugTable.setData('/getDrugs', {token: token})}
    };
 
 });
@@ -43,6 +54,7 @@ let pacientTable = new Tabulator("#pacientTable", {
     tooltips: true,
     tooltipsHeader: true,
     ajaxURL: '/getPatients',
+    ajaxParams: {token: token},
     index: "sku",
     reactiveData: true,
     layout: "fitColumns",
@@ -59,21 +71,22 @@ let pacientTable = new Tabulator("#pacientTable", {
 
 
 
-drugs()
-async function drugs() {
-    // let xy = { pene: 2 }
-    // const options = {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(xy)
-    // };
-    // fetch('/pene', options);
-  fetch('/pene');
-// let dataPacients = await fetchPacients.json();
-// if (dataPacients) {console.log("funca")} else {console.log("no funca")}
-}
+// drugs()
+// async function drugs() {
+//     let token = localStorage.getItem('token');
+//     let x = { token };
+//     const options = {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(x)
+//     };
+//     fetch('/pene', options);
+//   //fetch('/pene');
+// // let dataPacients = await fetchPacients.json();
+// // if (dataPacients) {console.log("funca")} else {console.log("no funca")}
+// }
 
 let drugTable = new Tabulator("#drugTable", {
     maxHeight: "300px",
@@ -81,6 +94,7 @@ let drugTable = new Tabulator("#drugTable", {
     tooltips: true,
     tooltipsHeader: true,
     ajaxURL: '/getDrugs',
+    ajaxParams:{token: token},
     index: "sku",
     reactiveData: true,
     layout: "fitColumns",
@@ -169,7 +183,8 @@ document.getElementById("addPrescription").addEventListener("click", (event) => 
 
     let medicamentosRecetados = prescriptionPreviewTable.getData();
     let comentarios = document.getElementById("comentario-prescriptionPreview").value;
-    let x = { selectedPatient, medicamentosRecetados, comentarios };
+    let data = { selectedPatient, medicamentosRecetados, comentarios, fecha };
+    let dataAndToken = {token: token, data: data};
 
     newPrescription();
     async function newPrescription() {
@@ -178,7 +193,7 @@ document.getElementById("addPrescription").addEventListener("click", (event) => 
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(x)
+            body: JSON.stringify(dataAndToken)
         };
         let response = await fetch('/newPrescription', options);
         let data = await response.json();

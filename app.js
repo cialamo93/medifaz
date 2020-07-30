@@ -12,6 +12,7 @@ const Cloud = require('@google-cloud/storage');
 const path = require('path');
 const serviceKey = path.join(__dirname, './googleApiKeys.json');
 let _ = require('lodash');
+const jwt = require('jsonwebtoken');
 
 let fecha = moment();
 
@@ -36,8 +37,6 @@ app.use(express.json());
 app.get('/', (request, response) => { response.json({ message: 'Todo Bien por aqui' }); }); 
 
 
-
-let userX; //Nombre de usuario que accesa al sistema
 let drugstoreX;
 
 //Links para acceder a la base de datos. OJO QUE ".GET" ES PARA CREAR COLECCIONES O ACCEDER A LA COLECCION, NO PARA EXTRAER COSAS DE AHI (OSEA EN TODO CASO AL FINAL IGUAL SE HACE ESO)
@@ -92,25 +91,20 @@ app.post('/loginDoctores', (request, response) => {
         password: request.body.password,
     };
 
-    async function proof() {
-        let user = await usuarios.findOne({
-            rut: usuario.rut
-        })
+    async function verifyUser() {
+        let user = await usuarios.findOne({ rut: usuario.rut })
         
         if (user) {
             if (user.password == usuario.password) {
-                userX = user;
-                response.json("Permitir");
+                let token = jwt.sign({ userID: user._id, email: user.email, name: user.name, rut: user.rut }, "claveSecreta", { expiresIn: "1hr" });
+                let res = {acceso: "Permitir", token: token};
+                response.json(res);
             }
-            else {
-                response.json("Contraseña Equivocada")
-            }
+            else { let res = {acceso: "Contraseña Equivocada", token: null}; response.json(res); }
         }
-        else {
-            response.json("Usuario no encontrado")
-        }
+        else { let res = {acceso: "Usuario no encontrado", token: null}; response.json(res); }
     }
-    proof();
+    verifyUser();
 });
 
 // LOGIN. Ruta para Ingresar. Se activa al apretar botón de "login". 
@@ -137,41 +131,50 @@ app.post('/loginDrugstore', (request, response) => {
 });
 
 app.post('/newPatient', (request, response) => {
+    let token = jwt.decode(request.body.token);
+    let data = request.body.data;
     const paciente = {
-        paciente: request.body.paciente,
-        rut: request.body.rut,
-        comentario: request.body.comentario,
-        telefono: request.body.telefono,
-        mail: request.body.mail,
-        telefonoSecundario: request.body.telefonoSecundario,
-        direccion: request.body.direccion,
+        paciente: data.paciente,
+        rut: data.rut,
+        comentario: data.comentario,
+        telefono: data.telefono,
+        mail: data.mail,
+        telefonoSecundario: data.telefonoSecundario,
+        direccion: data.direccion,
     };
-        usuarios.update({ "_id": objectId(userX._id)}, { $push: { pacientes: paciente } }, {upsert:true, multi: false}).then(() => { response.json("Done"); });  
+    usuarios.update({ "_id": objectId(token.userID)}, { $push: { pacientes: paciente } }, {upsert:true, multi: false}).then(() => { response.json("Done"); });  
 });
 
 
 app.get('/getPatients', (request, response) => {
+let decoded = jwt.decode(request.query.token);
+let rut = decoded.rut;
 let pacients = [];
-async function queryPacients() { let query = await usuarios.aggregate([{ "$match": { "rut": userX.rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, medicamentos: 0 } }, ]); pacients.push(query); return "Done"; };
+async function queryPacients() { let query = await usuarios.aggregate([{ "$match": { "rut": rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, medicamentos: 0 } }, ]); pacients.push(query); return "Done"; };
 queryAll(); async function queryAll() { let pacientsQuery = await queryPacients(); if (pacientsQuery) { response.json(pacients[0][0].pacientes); }; };
 });
 
 
 app.post('/newDrug', (request, response) => {
+    let token = jwt.decode(request.body.token);
+    let data = request.body.data;
+
     const medicamento = {
-        medicamento: request.body.medicamento,
-        fabricante: request.body.fabricante,
-        formato: request.body.formato,
-        dosis: request.body.dosis,
-        drugID: request.body.drugID
+        medicamento: data.medicamento,
+        fabricante: data.fabricante,
+        formato: data.formato,
+        dosis: data.dosis,
+        drugID: data.drugID
     };
-        usuarios.update({ "_id": objectId(userX._id)}, { $push: { medicamentos: medicamento } }, {upsert:true, multi: false}).then(() => { response.json("Done"); });  
+        usuarios.update({ "_id": objectId(token.userID)}, { $push: { medicamentos: medicamento } }, {upsert:true, multi: false}).then(() => { response.json("Done"); });  
 });
 
 
 app.get('/getDrugs', (request, response) => {
+    let decoded = jwt.decode(request.query.token);
+    let rut = decoded.rut;
     let drugs = [];
-    async function queryDrugs() { let query = await usuarios.aggregate([{ "$match": { "rut": userX.rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, pacientes: 0 } }, ]); drugs.push(query); return "Done"; };
+    async function queryDrugs() { let query = await usuarios.aggregate([{ "$match": { "rut": rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, pacientes: 0 } }, ]); drugs.push(query); return "Done"; };
     queryAll();
     async function queryAll() {
         let drugsQuery = await queryDrugs();
@@ -181,33 +184,38 @@ app.get('/getDrugs', (request, response) => {
     };
 });
 
-app.get('/pene', (request, response) => { 
-    console.log("algo llega wn")
-    // let drugs = [];
-    // async function queryDrugs() { let query = await usuarios.aggregate([{ "$match": { "rut": userX.rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, pacientes: 0 } }, ]); drugs.push(query); return "Done"; };
-    // queryAll();
-    // async function queryAll() {
-    //     let drugsQuery = await queryDrugs();
-    //     if (drugsQuery) {
-    //         response.json(drugs[0][0].medicamentos);
-    //     };
-    // };
-}); 
-app.post('/pene', (request, response) => { 
-    console.log("algo llega wn")
-}); 
+// app.post('/pene', (request, response) => { 
+//     var decoded = jwt.decode(request.body.token);
+//     console.log(decoded);
+
+//     // let drugs = [];
+//     // async function queryDrugs() { let query = await usuarios.aggregate([{ "$match": { "rut": userX.rut } }, { $project: { _id: 0, created: 0, email: 0, name: 0, password: 0, rut: 0, pacientes: 0 } }, ]); drugs.push(query); return "Done"; };
+//     // queryAll();
+//     // async function queryAll() {
+//     //     let drugsQuery = await queryDrugs();
+//     //     if (drugsQuery) {
+//     //         response.json(drugs[0][0].medicamentos);
+//     //     };
+//     // };
+// }); 
+// app.post('/pene', (request, response) => { 
+//     console.log("algo llega wn")
+// }); 
 
 
 app.post('/newPrescription', (request, response) => {
 
+    let token = jwt.decode(request.body.token);
+    let data = request.body.data;
+
     const prescription = {
-        nombreDoctor: userX.name,
-        rutDoctor: userX.rut,
-        nombrePaciente: request.body.selectedPatient.paciente,
-        rutPaciente: request.body.selectedPatient.rut,
-        comentarios: request.body.comentarios,
-        medicamentosRecetados: request.body.medicamentosRecetados,
-        created: request.body.fecha
+        nombreDoctor: token.name,
+        rutDoctor: token.rut,
+        nombrePaciente: data.selectedPatient.paciente,
+        rutPaciente: data.selectedPatient.rut,
+        comentarios: data.comentarios,
+        medicamentosRecetados: data.medicamentosRecetados,
+        created: data.fecha
     }
     const _id = request.body._id;
 
